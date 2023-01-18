@@ -8,7 +8,7 @@ To do this, they need you to **prepare a robust data set showing how the food av
 As a supplementary material, also prepare a table with GDP, GINI coefficient and population of **other European countries** in the same time period as the primary overview for the Czech Republic.
 
 ### Solution
-### Tables and views
+#### Tables and views
 - Primary table `t_ondrej_plechac_project_SQL_primary_final`:
     - `name` – name of the industry/food category/GDP;
     - `year` – year to which the data refer;
@@ -23,7 +23,7 @@ As a supplementary material, also prepare a table with GDP, GINI coefficient and
     - `population` - population count;
 - Additional views for query optimization.
 
-### Research questions
+#### Research questions
 **1. Have wages in all sectors been rising over the years, or have they been falling in some?**  
 The data show that, according to the period under review, i.e. between 2000 and 2021, average wages in all sectors increased overall. However, in certain years we can observe a year-on-year decline in some sectors, most notably in 2013.
 
