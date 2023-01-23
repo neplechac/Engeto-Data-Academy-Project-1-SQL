@@ -1,8 +1,8 @@
 -- PAYROLL VIEW
 CREATE OR REPLACE VIEW v_cz_avg_payroll AS (
 	SELECT cpib.name,
-			cp.payroll_year,
-			AVG(cp.value) AS value
+		cp.payroll_year,
+		AVG(cp.value) AS value
 	FROM czechia_payroll AS cp
 	JOIN czechia_payroll_industry_branch AS cpib
 		ON cp.industry_branch_code = cpib.code
@@ -16,10 +16,10 @@ CREATE OR REPLACE VIEW v_cz_avg_payroll AS (
 -- PRICES VIEW
 CREATE OR REPLACE VIEW v_cz_avg_prices AS (
 	SELECT cpc.name,
-			YEAR(cp.date_from) AS `year`,
-			ROUND(AVG(cp.value), 2) AS value,
-			cpc.price_value,
-			cpc.price_unit
+		YEAR(cp.date_from) AS `year`,
+		ROUND(AVG(cp.value), 2) AS value,
+		cpc.price_value,
+		cpc.price_unit
 	FROM czechia_price AS cp
 	JOIN czechia_price_category AS cpc
 		ON cp.category_code = cpc.code
@@ -31,9 +31,9 @@ CREATE OR REPLACE VIEW v_cz_avg_prices AS (
 -- GDP VIEW
 CREATE OR REPLACE VIEW v_cz_gdp AS (
 	SELECT `year`, 
-			GDP
+		GDP
 	FROM economies
-	WHERE country = "Czech Republic" 
+	WHERE country = 'Czech Republic' 
 		AND `year` >= (
 			WITH start_year AS (
 				SELECT `year` 
@@ -60,31 +60,31 @@ CREATE OR REPLACE TABLE t_ondrej_plechac_project_SQL_primary_final (
 
 INSERT INTO t_ondrej_plechac_project_SQL_primary_final (
 	SELECT vpay.name, 
-			vpay.payroll_year,
-			vpay.value,
-			100,
-			NULL,
-			"Kč"
+		vpay.payroll_year,
+		vpay.value,
+		100,
+		NULL,
+		"Kč"
 	FROM v_cz_avg_payroll AS vpay 
 );
 
 INSERT INTO t_ondrej_plechac_project_SQL_primary_final (
 	SELECT vpri.name, 
-			vpri.`year`, 
-			vpri.value, 
-			200, 
-			vpri.price_value,
-			vpri.price_unit 
+		vpri.`year`, 
+		vpri.value, 
+		200, 
+		vpri.price_value,
+		vpri.price_unit 
 	FROM v_cz_avg_prices AS vpri
 );
 
 INSERT INTO t_ondrej_plechac_project_SQL_primary_final (
 	SELECT "GDP",
-			vgdp.`year`,
-			vgdp.GDP,
-			300,
-			NULL,
-			NULL
+		vgdp.`year`,
+		vgdp.GDP,
+		300,
+		NULL,
+		NULL
 	FROM v_cz_gdp AS vgdp
 );
 
@@ -92,14 +92,14 @@ INSERT INTO t_ondrej_plechac_project_SQL_primary_final (
 -- SECONDARY TABLE
 CREATE OR REPLACE TABLE t_ondrej_plechac_project_SQL_secondary_final AS (
 	SELECT e.country,
-			e.`year`,
-			e.GDP,
-			e.gini,
-			e.population
+		e.`year`,
+		e.GDP,
+		e.gini,
+		e.population
 	FROM economies AS e
 	JOIN countries AS c 
 		ON e.country  = c.country
-	WHERE c.continent  = "Europe"
+	WHERE c.continent  = 'Europe'
 		AND e.`year` >= (
 			WITH start_year AS (
 				SELECT `year` 
@@ -118,7 +118,7 @@ CREATE OR REPLACE TABLE t_ondrej_plechac_project_SQL_secondary_final AS (
 -- AVERAGE SALARY VIEW (all industries combined)
 CREATE OR REPLACE VIEW v_salary AS (
 	SELECT `year`, 
-			ROUND(AVG(value), 2) AS salary
+		ROUND(AVG(value), 2) AS salary
 	FROM t_ondrej_plechac_project_SQL_primary_final
 	WHERE code = 100
 	GROUP BY `year`
@@ -128,7 +128,7 @@ CREATE OR REPLACE VIEW v_salary AS (
 -- AVERAGE PRICE VIEW (all categories combined)
 CREATE OR REPLACE VIEW v_price AS (
 	SELECT `year`, 
-			ROUND(AVG(value), 2) AS price
+		ROUND(AVG(value), 2) AS price
 	FROM t_ondrej_plechac_project_SQL_primary_final
 	WHERE code = 200
 	GROUP BY `year`
@@ -138,10 +138,10 @@ CREATE OR REPLACE VIEW v_price AS (
 -- QUESTION 1
 -- 2000 vs 2021
 SELECT s1.name, 
-		s1.`year`, 
-		s1.value, 
-		s2.`year` AS actual, 
-		s2.value
+	s1.`year`, 
+	s1.value, 
+	s2.`year` AS actual, 
+	s2.value
 FROM t_ondrej_plechac_project_SQL_primary_final AS s1
 JOIN t_ondrej_plechac_project_SQL_primary_final AS s2
 	ON s1.name = s2.name 
@@ -153,10 +153,10 @@ ORDER BY name;
 
 -- annual (year-on-year decrease only)
 SELECT s1.name, 
-		s1.`year`, 
-		s1.value, 
-		s2.`year` AS year_prev, 
-		s2.value
+	s1.`year`, 
+	s1.value, 
+	s2.`year` AS year_prev, 
+	s2.value
 FROM t_ondrej_plechac_project_SQL_primary_final AS s1
 JOIN t_ondrej_plechac_project_SQL_primary_final AS s2
 	ON s1.name = s2.name 
@@ -168,19 +168,19 @@ ORDER BY `year`, name;
 
 -- QUESTION 2
 SELECT s.`year`,
-		s.salary,
-		p1.name,
-		p1.value,
-		FLOOR(s.salary / p1.value) AS milk_amount,
-		CONCAT(p1.price_value, " ", p1.unit) AS milk_unit, 
-		p2.name,
-		p2.value,
-		FLOOR(s.salary / p2.value) AS bread_amount,
-		CONCAT(p2.price_value, " ", p2.unit) AS bread_unit 
+	s.salary,
+	p1.name,
+	p1.value,
+	FLOOR(s.salary / p1.value) AS milk_amount,
+	CONCAT(p1.price_value, " ", p1.unit) AS milk_unit, 
+	p2.name,
+	p2.value,
+	FLOOR(s.salary / p2.value) AS bread_amount,
+	CONCAT(p2.price_value, " ", p2.unit) AS bread_unit 
 FROM v_salary AS s
 JOIN t_ondrej_plechac_project_SQL_primary_final AS p1
 	ON s.`year` = p1.`year`
-	AND p1.name = "Mléko polotučné pasterované"
+	AND p1.name = 'Mléko polotučné pasterované'
 JOIN t_ondrej_plechac_project_SQL_primary_final AS p2
 	ON s.`year` = p2.`year`
 	AND p2.name = 'Chléb konzumní kmínový'
@@ -190,11 +190,11 @@ ORDER BY s.`year`;
 -- QUESTION 3
 -- 2006 vs 2018
 SELECT p1.name, 
-		p1.`year`,
-		p1.value,
-		p2.`year`,
-		p2.value,
-		ROUND((p2.value - p1.value) / p1.value * 100, 2) AS `diff%`
+	p1.`year`,
+	p1.value,
+	p2.`year`,
+	p2.value,
+	ROUND((p2.value - p1.value) / p1.value * 100, 2) AS `diff%`
 FROM t_ondrej_plechac_project_SQL_primary_final AS p1
 JOIN t_ondrej_plechac_project_SQL_primary_final AS p2
 	ON p1.name = p2.name
@@ -205,11 +205,11 @@ ORDER BY `diff%`;
 
 -- annual
 SELECT p1.name, 
-		p1.`year`, 
-		p1.value,	
-		p2.`year` AS year_prev, 
-		p2.value,
-		ROUND((p1.value - p2.value) / p2.value * 100, 2) AS `diff%`
+	p1.`year`, 
+	p1.value,	
+	p2.`year` AS year_prev, 
+	p2.value,
+	ROUND((p1.value - p2.value) / p2.value * 100, 2) AS `diff%`
 FROM t_ondrej_plechac_project_SQL_primary_final AS p1
 JOIN t_ondrej_plechac_project_SQL_primary_final AS p2
 	ON p1.name = p2.name 
@@ -220,13 +220,13 @@ ORDER BY `diff%`;
 
 -- QUESTION 4
 SELECT s1.`year`,
-		s1.salary,
-		s2.salary AS salary_prev,
-		p1.price,
-		p2.price AS price_prev,
-		ROUND((s1.salary - s2.salary) / s2.salary * 100, 2) AS `salary_diff%`,
-		ROUND((p1.price - p2.price) / p2.price * 100, 2) AS `price_diff%`,
-		ROUND((s1.salary - s2.salary) / s2.salary * 100, 2) - ROUND((p1.price - p2.price) / p2.price * 100, 2) AS comp
+	s1.salary,
+	s2.salary AS salary_prev,
+	p1.price,
+	p2.price AS price_prev,
+	ROUND((s1.salary - s2.salary) / s2.salary * 100, 2) AS `salary_diff%`,
+	ROUND((p1.price - p2.price) / p2.price * 100, 2) AS `price_diff%`,
+	ROUND((s1.salary - s2.salary) / s2.salary * 100, 2) - ROUND((p1.price - p2.price) / p2.price * 100, 2) AS comp
 FROM v_salary AS s1
 JOIN v_salary AS s2
 	ON s1.`year` = s2.`year` + 1
@@ -238,9 +238,9 @@ JOIN v_price AS p2
 
 -- QUESTION 5
 SELECT s1.`year`,
-		ROUND((g1.value - g2.value) / g2.value * 100, 2) AS `gdp_diff%`,
-		ROUND((s1.salary - s2.salary) / s2.salary * 100, 2) AS `salary_diff%`,
-		ROUND((p1.price - p2.price) / p2.price * 100, 2) AS `price_diff%`
+	ROUND((g1.value - g2.value) / g2.value * 100, 2) AS `gdp_diff%`,
+	ROUND((s1.salary - s2.salary) / s2.salary * 100, 2) AS `salary_diff%`,
+	ROUND((p1.price - p2.price) / p2.price * 100, 2) AS `price_diff%`
 FROM v_salary AS s1
 JOIN v_salary AS s2
 	ON s1.`year` = s2.`year` + 1
