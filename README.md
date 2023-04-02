@@ -7,6 +7,8 @@ To do this, they need you to **prepare a robust data set showing how the food av
 
 As a supplementary material, also prepare a table with GDP, GINI coefficient and population of **other European countries** in the same time period as the primary overview for the Czech Republic.
 
+[**Sample database**](https://drive.google.com/file/d/1VDZ0OtOZPYq-ti4euEv7sphm0Gca4Cdr/view?usp=sharing) (MariaDB)
+
 ### Solution
 #### Tables and views
 - Primary table `t_ondrej_plechac_project_SQL_primary_final`:
